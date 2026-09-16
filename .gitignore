@@ -18,3 +18,15 @@ __pycache__/
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Executables and downloaded SDK tools
+*.exe
+platform-tools/
+**/platform-tools/
+ALEAPP_USB_Portable/*.exe
+ALEAPP_USB_Portable/platform-tools/
+ALEAPP_USB_Portable/extracted_phone_data/
+extracted_phone_data/
+dist/
+build/
+*.spec
