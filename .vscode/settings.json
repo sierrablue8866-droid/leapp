@@ -1,9 +1,13 @@
 {
   "cSpell.words": [
+    "adb",
     "ALEAPP",
     "aleapp",
     "alprofile",
+    "DCIM",
+    "enabledelayedexpansion",
     "ERRORLEVEL",
+    "fastboot",
     "iLEAPP",
     "ileapp",
     "ilprofile",
@@ -12,6 +16,7 @@
     "LEAPP",
     "Plists",
     "psscriptroot",
+    "sdcard",
     "sqlcipher",
     "venv"
   ]
