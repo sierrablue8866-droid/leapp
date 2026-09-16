@@ -238,22 +238,7 @@ function Invoke-BlindUnlock {
     Write-Host "[*] Blind unlock sequence complete." -ForegroundColor Green
 }
 
-function [ArgumentCompleter({
-        [OutputType([System.Management.Automation.CompletionResult])]
-        param(
-            [string] $CommandName,
-            [string] $ParameterName,
-            [string] $WordToComplete,
-            [System.Management.Automation.Language.CommandAst] $CommandAst,
-            [System.Collections.IDictionary] $FakeBoundParameters
-        )
-    
-        $CompletionResults = [System.Collections.Generic.List[System.Management.Automation.CompletionResult]]::new()
-    
-        Start-Aleapp 
-    
-        return $CompletionResults
-    })] {
+function Launch-Aleapp {
     param([string]$InputPath)
 
     Write-Host "`n================================================================================" -ForegroundColor Cyan

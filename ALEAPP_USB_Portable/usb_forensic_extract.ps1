@@ -45,12 +45,12 @@ function Show-Banner {
 
 function Get-UsbScan {
     $results = @{
-        AdbState = "None"
-        AdbSerial = $null
-        AdbModel = $null
-        MtpDevices = @()
+        AdbState                = "None"
+        AdbSerial               = $null
+        AdbModel                = $null
+        MtpDevices              = @()
         SamsungHardwareDetected = $false
-        SmartSwitchBackups = @()
+        SmartSwitchBackups      = @()
     }
 
     # 1. Check ADB
@@ -67,7 +67,8 @@ function Get-UsbScan {
                 break
             }
         }
-    } catch {}
+    }
+    catch {}
 
     # 2. Check Samsung USB Hardware via PnP
     try {
@@ -77,7 +78,8 @@ function Get-UsbScan {
         if ($samsungPnp) {
             $results.SamsungHardwareDetected = $true
         }
-    } catch {}
+    }
+    catch {}
 
     # 3. Check Windows Shell MTP / Portable Devices
     try {
@@ -92,7 +94,8 @@ function Get-UsbScan {
                 }
             }
         }
-    } catch {}
+    }
+    catch {}
 
     # 4. Check Smart Switch Backups
     $ssPath = Join-Path $env:USERPROFILE "Documents\Samsung\SmartSwitch\backup"
@@ -157,7 +160,7 @@ function Invoke-AdbFullExtraction {
     Write-Host "`n[SUCCESS] ADB Forensic Extraction Complete!" -ForegroundColor Green
     Write-Host "Files saved to: $OutputDir" -ForegroundColor White
     
-    Start-Aleapp -InputPath $OutputDir
+    Launch-Aleapp -InputPath $OutputDir
 }
 
 function Invoke-MtpExtraction {
@@ -197,7 +200,7 @@ function Invoke-MtpExtraction {
 
     Write-Host "`n[SUCCESS] MTP Extraction Finished!" -ForegroundColor Green
     Write-Host "Files saved to: $OutputDir" -ForegroundColor White
-    Start-Aleapp -InputPath $OutputDir
+    Launch-Aleapp -InputPath $OutputDir
 }
 
 function Invoke-BlindUnlock {
@@ -235,7 +238,7 @@ function Invoke-BlindUnlock {
     Write-Host "[*] Blind unlock sequence complete." -ForegroundColor Green
 }
 
-function Start-Aleapp {
+function Launch-Aleapp {
     param([string]$InputPath)
 
     Write-Host "`n================================================================================" -ForegroundColor Cyan
@@ -258,9 +261,11 @@ function Start-Aleapp {
         Write-Host "`n[*] Running ALEAPP CLI: Parsing '$InputPath' -> '$ReportDir'..." -ForegroundColor Green
         if (Test-Path $VenvPython) {
             & $VenvPython $AleappPy -t fs -i $InputPath -o $ReportDir
-        } elseif (Test-Path "H:\leapp\ALEAPP\dist\aleapp.exe") {
+        }
+        elseif (Test-Path "H:\leapp\ALEAPP\dist\aleapp.exe") {
             & "H:\leapp\ALEAPP\dist\aleapp.exe" -t fs -i $InputPath -o $ReportDir
-        } else {
+        }
+        else {
             Write-Host "[!] Python or CLI binary not found, launching GUI..." -ForegroundColor Yellow
             $choice = "2"
         }
@@ -272,7 +277,8 @@ function Start-Aleapp {
         Write-Host "[*] Launching ALEAPP GUI..." -ForegroundColor Cyan
         if (Test-Path $VenvPython) {
             Start-Process -FilePath $VenvPython -ArgumentList "`"$AleappPy`"" -WorkingDirectory "H:\leapp\ALEAPP"
-        } elseif (Test-Path $AleappGuiExe) {
+        }
+        elseif (Test-Path $AleappGuiExe) {
             Start-Process -FilePath $AleappGuiExe -WorkingDirectory (Split-Path -Parent $AleappGuiExe)
         }
     }
@@ -299,7 +305,8 @@ if ($scan.AdbState -eq "device") {
     if ($run -ne 'n') {
         Invoke-AdbFullExtraction -Serial $scan.AdbSerial
     }
-} elseif ($scan.AdbState -eq "unauthorized") {
+}
+elseif ($scan.AdbState -eq "unauthorized") {
     Write-Host "`n[!] Device detected via ADB, but it is UNAUTHORIZED." -ForegroundColor Yellow
     Write-Host "    Because the screen is broken, you cannot tap 'Allow USB Debugging'." -ForegroundColor White
     Write-Host "    Options:" -ForegroundColor Cyan
@@ -310,7 +317,8 @@ if ($scan.AdbState -eq "device") {
     if ($opt -eq "1") {
         Invoke-BlindUnlock -Serial $scan.AdbSerial
     }
-} elseif ($scan.MtpDevices.Count -gt 0) {
+}
+elseif ($scan.MtpDevices.Count -gt 0) {
     Write-Host "`n[!] Windows MTP Device Detected!" -ForegroundColor Green
     foreach ($d in $scan.MtpDevices) {
         Write-Host "    Device: $($d.Name)" -ForegroundColor Cyan
@@ -319,18 +327,20 @@ if ($scan.AdbState -eq "device") {
     if ($run -ne 'n') {
         Invoke-MtpExtraction -MtpDeviceItem $scan.MtpDevices[0]
     }
-} elseif ($scan.SmartSwitchBackups.Count -gt 0) {
+}
+elseif ($scan.SmartSwitchBackups.Count -gt 0) {
     Write-Host "`n[!] Found Samsung Smart Switch Backup(s) on this PC!" -ForegroundColor Green
-    for ($i=0; $i -lt $scan.SmartSwitchBackups.Count; $i++) {
+    for ($i = 0; $i -lt $scan.SmartSwitchBackups.Count; $i++) {
         $b = $scan.SmartSwitchBackups[$i]
         Write-Host "    [$($i+1)] $($b.Name) ($($b.LastWriteTime))" -ForegroundColor Cyan
     }
     $sel = Read-Host "Select backup number to parse with ALEAPP (or press Enter to skip)"
     if ($sel -match '^\d+$' -and [int]$sel -le $scan.SmartSwitchBackups.Count) {
         $targetBackup = $scan.SmartSwitchBackups[[int]$sel - 1].FullName
-        Start-Aleapp -InputPath $targetBackup
+        Launch-Aleapp -InputPath $targetBackup
     }
-} else {
+}
+else {
     Write-Host "`n[!] NO DEVICE DETECTED OVER USB." -ForegroundColor Red
     Write-Host ""
     Write-Host "CRITICAL DIAGNOSTIC CHECKLIST FOR SAMSUNG WITH BROKEN SCREEN:" -ForegroundColor Yellow
@@ -364,7 +374,8 @@ if ($scan.AdbState -eq "device") {
             # Restart script with detected state
             & $MyInvocation.MyCommand.Definition
             break
-        } else {
+        }
+        else {
             Write-Host "." -NoNewline -ForegroundColor DarkGray
         }
     }
