@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title Android Phone USB Extractor
+title Samsung A56 Forensic Extractor (Portable)
 cd /d "%~dp0"
 
 set ADB=platform-tools\adb.exe
@@ -11,25 +11,25 @@ if not exist "%ADB%" (
 )
 
 echo ==========================================================
-echo       Android Mobile USB Detection & Extractor
+echo       Samsung A56 Portable Extractor ^& ALEAPP Launcher
 echo ==========================================================
 echo.
 
 :CHECK_DEVICE
-echo Scanning for connected Android phone...
-"%ADB%" devices
+echo Checking for connected Samsung A56 via ADB...
+"%ADB%" devices -l
 echo.
 
 "%ADB%" get-state 1>nul 2>nul
 if %ERRORLEVEL% NEQ 0 (
-    echo [!] No authorized Android phone detected.
+    echo [!] Samsung A56 not yet authorized or disconnected.
     echo.
-    echo Please follow these steps on your phone:
-    echo  1. Connect USB cable firmly to this computer.
-    echo  2. Go to: Settings -^> About Phone -^> tap 'Build Number' 7 times.
-    echo  3. Go to: Settings -^> Developer Options -^> Enable 'USB Debugging'.
+    echo Please make sure:
+    echo  1. USB cable is firmly connected directly to the PC (must support data transfer).
+    echo  2. On Samsung A56: Settings -^> Security and privacy -^> Auto Blocker -^> Turn OFF.
+    echo  3. On Samsung A56: Settings -^> Developer options -^> Enable 'USB Debugging'.
     echo  4. Unlock your phone and look at the screen:
-    echo     TAP 'ALLOW' on the popup: 'Allow USB debugging from this computer?'
+    echo     TAP 'ALLOW' on: 'Allow USB debugging from this computer?'
     echo.
     echo Press any key to re-check, or close this window to exit.
     pause >nul
@@ -37,63 +37,48 @@ if %ERRORLEVEL% NEQ 0 (
     goto CHECK_DEVICE
 )
 
-echo [OK] Phone connected and authorized!
+echo [OK] Samsung A56 detected and authorized!
+echo ==========================================================
+for /f "tokens=*" %%a in ('"%ADB%" shell getprop ro.product.model 2^>nul') do echo Model: %%a
+for /f "tokens=*" %%a in ('"%ADB%" shell getprop ro.build.version.release 2^>nul') do echo Android Version: %%a
+for /f "tokens=*" %%a in ('"%ADB%" shell getprop ro.serialno 2^>nul') do echo Serial: %%a
+echo ==========================================================
 echo.
+
 set OUT_DIR=%~dp0extracted_phone_data
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%"
 
-echo Extraction destination: %OUT_DIR%
-echo.
-echo Select what to extract:
-echo  [1] Key forensic folders (Downloads, Photos/DCIM, Documents, WhatsApp)
-echo  [2] Full Internal Storage (/sdcard/)
-echo  [3] Create Full Device ADB Backup (.ab archive)
-echo  [4] Open Interactive Phone Shell
-echo.
-set /p CHOICE="Enter choice (1-4): "
+echo Extracting forensic artifacts to %OUT_DIR% ...
+echo [1/7] Pulling DCIM (Photos, Camera, Screenshots)...
+"%ADB%" pull /sdcard/DCIM "%OUT_DIR%\DCIM"
 
-if "%CHOICE%"=="1" (
-    echo.
-    echo Extracting Downloads...
-    "%ADB%" pull /sdcard/Download "%OUT_DIR%\Download"
-    echo Extracting DCIM (Photos & Videos)...
-    "%ADB%" pull /sdcard/DCIM "%OUT_DIR%\DCIM"
-    echo Extracting Pictures...
-    "%ADB%" pull /sdcard/Pictures "%OUT_DIR%\Pictures"
-    echo Extracting Documents...
-    "%ADB%" pull /sdcard/Documents "%OUT_DIR%\Documents"
-    echo Extracting WhatsApp (if present)...
-    "%ADB%" pull /sdcard/Android/media/com.whatsapp "%OUT_DIR%\WhatsApp"
-    echo.
-    echo [DONE] Extraction complete! Files saved to: %OUT_DIR%
-)
+echo [2/7] Pulling Pictures...
+"%ADB%" pull /sdcard/Pictures "%OUT_DIR%\Pictures"
 
-if "%CHOICE%"=="2" (
-    echo.
-    echo Extracting all internal storage (/sdcard/) to %OUT_DIR%\sdcard ...
-    "%ADB%" pull /sdcard/ "%OUT_DIR%\sdcard"
-    echo.
-    echo [DONE] Full storage extracted to: %OUT_DIR%\sdcard
-)
+echo [3/7] Pulling Downloads...
+"%ADB%" pull /sdcard/Download "%OUT_DIR%\Download"
 
-if "%CHOICE%"=="3" (
-    echo.
-    echo Creating ADB backup to %OUT_DIR%\backup.ab ...
-    echo [IMPORTANT] Check your phone screen now and tap 'Back up my data'!
-    "%ADB%" backup -all -f "%OUT_DIR%\backup.ab"
-    echo.
-    echo [DONE] Backup saved to: %OUT_DIR%\backup.ab
-)
+echo [4/7] Pulling Documents...
+"%ADB%" pull /sdcard/Documents "%OUT_DIR%\Documents"
 
-if "%CHOICE%"=="4" (
-    echo.
-    echo Opening phone shell (type 'exit' to quit)...
-    "%ADB%" shell
+echo [5/7] Pulling App Media (WhatsApp, Telegram, etc.)...
+"%ADB%" pull /sdcard/Android/media "%OUT_DIR%\media"
+
+echo [6/7] Dumping system telemetry, package inventory and logcat...
+"%ADB%" shell dumpsys package > "%OUT_DIR%\dumpsys_packages.txt" 2>nul
+"%ADB%" shell dumpsys batterystats > "%OUT_DIR%\dumpsys_batterystats.txt" 2>nul
+"%ADB%" shell pm list packages -f > "%OUT_DIR%\installed_packages.txt" 2>nul
+"%ADB%" shell logcat -d > "%OUT_DIR%\logcat.txt" 2>nul
+
+echo [7/7] Launching Portable ALEAPP GUI...
+if exist "%~dp0aleappGUI.exe" (
+    start "" "%~dp0aleappGUI.exe"
 )
 
 echo.
 echo ==========================================================
-echo Now run '2_Run_ALEAPP.bat' and select:
-echo Input Path: %OUT_DIR%
+echo Extraction completed! Data saved in: %OUT_DIR%
+echo ALEAPP GUI opened. Select '%OUT_DIR%' as Input folder.
 echo ==========================================================
+echo.
 pause
