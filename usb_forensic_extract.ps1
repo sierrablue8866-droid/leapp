@@ -235,6 +235,7 @@ function Invoke-BlindUnlock {
     Write-Host "[*] Blind unlock sequence complete." -ForegroundColor Green
 }
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '')]
 function Start-Aleapp {
     param([string]$InputPath)
 
