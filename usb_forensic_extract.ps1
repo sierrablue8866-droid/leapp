@@ -157,7 +157,7 @@ function Invoke-AdbFullExtraction {
     Write-Host "`n[SUCCESS] ADB Forensic Extraction Complete!" -ForegroundColor Green
     Write-Host "Files saved to: $OutputDir" -ForegroundColor White
     
-    Launch-Aleapp -InputPath $OutputDir
+    Start-Aleapp -InputPath $OutputDir
 }
 
 function Invoke-MtpExtraction {
@@ -197,7 +197,7 @@ function Invoke-MtpExtraction {
 
     Write-Host "`n[SUCCESS] MTP Extraction Finished!" -ForegroundColor Green
     Write-Host "Files saved to: $OutputDir" -ForegroundColor White
-    Launch-Aleapp -InputPath $OutputDir
+    Start-Aleapp -InputPath $OutputDir
 }
 
 function Invoke-BlindUnlock {
@@ -235,7 +235,7 @@ function Invoke-BlindUnlock {
     Write-Host "[*] Blind unlock sequence complete." -ForegroundColor Green
 }
 
-function Launch-Aleapp {
+function Start-Aleapp {
     param([string]$InputPath)
 
     Write-Host "`n================================================================================" -ForegroundColor Cyan
@@ -328,7 +328,7 @@ if ($scan.AdbState -eq "device") {
     $sel = Read-Host "Select backup number to parse with ALEAPP (or press Enter to skip)"
     if ($sel -match '^\d+$' -and [int]$sel -le $scan.SmartSwitchBackups.Count) {
         $targetBackup = $scan.SmartSwitchBackups[[int]$sel - 1].FullName
-        Launch-Aleapp -InputPath $targetBackup
+        Start-Aleapp -InputPath $targetBackup
     }
 } else {
     Write-Host "`n[!] NO DEVICE DETECTED OVER USB." -ForegroundColor Red
