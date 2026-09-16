@@ -99,6 +99,8 @@
     "serialno",
     "setlocal",
     "SETLOCAL",
+    "sideload",
+    "keyevent",
     "simplekml",
     "sourcepath",
     "sqlcipher",
