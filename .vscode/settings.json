@@ -16,6 +16,9 @@
     "${workspaceFolder}/iLEAPP",
     "${workspaceFolder}/iLEAPP/scripts"
   ],
+  "pylint.args": [
+    "--disable=C0103,C0114,C0115,C0116,C0301,C0303,C0304,C0325,C0411,C0412,C0413,C0415,R0912,R0914,R0915,W0401,W0611,W0613,W0614,W0621,W0602,W0603,W0702,W0718,W0703"
+  ],
   "cSpell.words": [
     "abxread",
     "activebackground",
