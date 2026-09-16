@@ -30,3 +30,7 @@ extracted_phone_data/
 dist/
 build/
 *.spec
+
+# Sub-repositories
+ALEAPP/
+iLEAPP/
