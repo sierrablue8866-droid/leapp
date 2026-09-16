@@ -1,5 +1,5 @@
 @echo off
-setfacl enabledelayedexpansion
+setlocal enabledelayedexpansion
 title Android Phone USB Extractor
 
 set ADB=H:\leapp\platform-tools\adb.exe
