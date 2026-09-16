@@ -2,12 +2,19 @@
   "python.defaultInterpreterPath": "${workspaceFolder}/ALEAPP/.venv/Scripts/python.exe",
   "python.analysis.typeCheckingMode": "off",
   "python.analysis.diagnosticSeverityOverrides": {
-    "reportImplicitRelativeImport": "none"
+    "reportImplicitRelativeImport": "none",
+    "reportGeneralTypeIssues": "none",
+    "reportOptionalMemberAccess": "none",
+    "reportPossiblyUnboundVariable": "none",
+    "reportAttributeAccessIssue": "none",
+    "reportWildcardImportFromLibrary": "none"
   },
   "python.analysis.extraPaths": [
     "${workspaceFolder}/ALEAPP",
     "${workspaceFolder}/ALEAPP/scripts",
-    "${workspaceFolder}/ALEAPP/leapp_functions"
+    "${workspaceFolder}/ALEAPP/leapp_functions",
+    "${workspaceFolder}/iLEAPP",
+    "${workspaceFolder}/iLEAPP/scripts"
   ],
   "cSpell.words": [
     "activebackground",
@@ -56,6 +63,7 @@
     "selectcolor",
     "selectforeground",
     "setlocal",
+    "SETLOCAL",
     "sqlcipher",
     "tbox",
     "tearoff",

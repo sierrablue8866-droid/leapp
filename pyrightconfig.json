@@ -1,0 +1,26 @@
+{
+  "include": [
+    "ALEAPP",
+    "iLEAPP"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "ALEAPP/.venv",
+    "ALEAPP/scripts/pyinstaller"
+  ],
+  "extraPaths": [
+    "ALEAPP",
+    "ALEAPP/scripts",
+    "ALEAPP/leapp_functions",
+    "iLEAPP",
+    "iLEAPP/scripts"
+  ],
+  "typeCheckingMode": "off",
+  "reportImplicitRelativeImport": "none",
+  "reportGeneralTypeIssues": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportPossiblyUnboundVariable": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportWildcardImportFromLibrary": "none"
+}
