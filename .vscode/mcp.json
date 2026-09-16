@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "amphion-command-deck": {
+      "command": "python3",
+      "args": [
+        ".amphion/command-deck/scripts/mcp-bridge.py"
+      ],
+      "env": {}
+    }
+  }
+}

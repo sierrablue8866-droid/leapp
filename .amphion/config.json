@@ -1,0 +1,9 @@
+{
+  "port": "8888",
+  "serverLang": "python",
+  "codename": "Sie",
+  "projectName": "Sierra",
+  "initialVersion": "0.1.0",
+  "mcdVersion": "1.59.2",
+  "commandDeckPath": ".amphion/command-deck"
+}

@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-current-view="board">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amphion Command Deck</title>
+  <link rel="icon" type="image/png" href="/application-logo.png" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script>
+    (function () {
+      var view = localStorage.getItem("mcd_current_view") || "board";
+      if (view === "wiki") {
+        view = "board";
+        localStorage.setItem("mcd_current_view", "board");
+      }
+      document.documentElement.setAttribute('data-current-view', view);
+      var theme = localStorage.getItem("mcd_theme") || "dark";
+      if (theme === "light") {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+      var collapsed = localStorage.getItem("mcd_sidebar_collapsed") === "true";
+      if (collapsed) {
+        document.documentElement.setAttribute('data-sidebar-collapsed', 'true');
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div class="app-shell">
+    <header class="global-header">
+      <div class="global-header-main">
+        <img src="/application-logo.png" alt="Amphion Logo" class="app-logo" />
+        <h1>Amphion Command Deck</h1>
+        <div class="view-selector" id="viewSelector">
+          <button class="view-selector-toggle" id="viewSelectorToggle">
+            <span id="currentViewLabel">Kanban</span>
+            <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="view-selector-options" id="viewSelectorOptions">
+            <button class="nav-tab active" data-view="board">Kanban</button>
+            <button class="nav-tab" data-view="dashboard">Dashboard</button>
+            <button class="nav-tab" data-view="charts">Charts Library</button>
+            <button class="nav-tab" data-view="guide">MCD Guide</button>
+          </div>
+        </div>
+      </div>
+      <div class="global-header-actions">
+        <button id="btnNewBoard" class="btn primary">New Board</button>
+        <div class="theme-switch-wrapper">
+          <label class="theme-switch" aria-label="Toggle Dark Mode">
+            <input type="checkbox" id="themeCheckbox">
+            <span class="theme-slider"></span>
+          </label>
+        </div>
+        <button id="btnAttributionInfo" class="btn btn-attribution-info" title="Credits & Attribution"
+          aria-label="Open credits and attribution">i</button>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <header class="sidebar-header">
+        <button id="btnToggleSidebar" class="btn-sidebar-toggle" title="Toggle Sidebar">«</button>
+      </header>
+      <section class="panel">
+        <details class="boards-accordion">
+          <summary>
+            <span class="boards-summary-text">
+              <span>Boards</span>
+              <span id="boardsSummaryActive" class="boards-summary-active">No active board</span>
+            </span>
+            <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </summary>
+          <div id="boardsList" class="board-list"></div>
+        </details>
+      </section>
+
+      <section class="panel">
+        <h2>Milestones</h2>
+        <div class="milestone-panel-actions">
+          <button id="btnAddMilestone" class="btn btn-sm">+ Milestone</button>
+          <button id="btnMilestoneArchives" class="btn btn-sm">Archives</button>
+        </div>
+        <div id="milestoneProgress" class="milestone-list"></div>
+      </section>
+
+      <section class="panel">
+        <details class="utilities-accordion">
+          <summary>
+            <span>Utilities</span>
+            <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </summary>
+          <div class="utility-actions">
+            <button id="btnCloneBoard" class="btn">Clone Active</button>
+            <button id="btnExportBoard" class="btn">Export JSON</button>
+            <button id="btnImportBoard" class="btn">Import JSON</button>
+            <input id="importFile" type="file" accept="application/json" hidden />
+          </div>
+
+        </details>
+      </section>
+    </aside>
+
+    <main id="dashboardView" class="workspace view-surface workspace-scroll">
+      <header class="view-header">
+        <h2 class="view-title">Project Dashboard</h2>
+        <div id="dashboardPhase" class="dashboard-phase">Active Phase:
+          Reading...</div>
+      </header>
+
+      <div class="split-grid">
+        <!-- Vitals & Metrics -->
+        <div class="stack-panel">
+          <section class="panel">
+            <h2>Milestone Burn-down</h2>
+            <div id="dashboardBurndown">Loading...</div>
+          </section>
+          <section class="panel">
+            <h2>Blockers</h2>
+            <div id="dashboardBlockers" class="dashboard-blockers">None</div>
+          </section>
+          <section class="panel">
+            <h2>Domain Metrics</h2>
+            <div id="dashboardMetrics" class="dashboard-metrics">Loading project type...</div>
+          </section>
+        </div>
+
+        <!-- Library & Traceability -->
+        <div class="stack-panel">
+          <section class="panel">
+            <h2>Core Reference Library</h2>
+            <div class="doc-button-row">
+              <button class="btn btn-doc" data-doc="charter">Project Charter</button>
+              <button class="btn btn-doc" data-doc="prd">PRD</button>
+              <button class="btn btn-doc" data-doc="guardrails">Guardrails</button>
+              <button class="btn btn-doc btn-doc-contract" data-doc="contract">Active
+                Contract</button>
+            </div>
+          </section>
+          <section class="panel">
+            <h2>Traceability Feed (Git)</h2>
+            <pre id="dashboardGitLog" class="traceability-log">Loading...</pre>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <main id="chartsView" class="workspace charts-view view-surface view-no-scroll">
+      <header class="charts-header">
+        <div>
+          <h2 class="view-title">Charts Library</h2>
+          <div class="charts-subtitle">Select a chart to open it in the
+            preview panel.</div>
+        </div>
+      </header>
+      <section class="charts-layout">
+        <section class="panel charts-list-panel">
+          <h2>Available Charts</h2>
+          <div id="chartsList" class="charts-list"></div>
+          <div id="chartsListEmpty" class="empty-state charts-empty">No charts found yet. Generated charts
+            will appear here.</div>
+        </section>
+        <aside id="chartsPanel" class="panel charts-preview-panel">
+          <div class="charts-preview-header">
+            <h2 id="chartsPanelTitle">Chart Preview</h2>
+            <div class="header-actions">
+              <button id="btnDeleteChart" class="btn danger">Delete Chart</button>
+              <button id="btnCloseChartsPanel" class="btn">Dismiss</button>
+            </div>
+          </div>
+          <div id="chartsPanelContent" class="markdown-body charts-preview-content">
+            Select a chart from the left to preview it.
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <main id="guideView" class="workspace view-surface workspace-scroll">
+      <header class="view-header view-header-split">
+        <h2 class="view-title">MCD Methodology Playbook</h2>
+        <button id="btnWhyMcd" class="btn btn-ghost-surface">Why
+          MCD?</button>
+      </header>
+      <div id="guideContent" class="markdown-body guide-content">
+        Loading playbook...
+      </div>
+    </main>
+
+    <main id="boardView" class="workspace">
+      <header class="workspace-header">
+        <div class="title-wrap">
+          <input id="boardName" class="board-name" maxlength="120" />
+          <textarea id="boardDescription" class="board-description" rows="2" placeholder="Board description"></textarea>
+        </div>
+        <div class="header-actions">
+          <button id="btnSaveBoard" class="btn">Save Board Meta</button>
+          <button id="btnDeleteBoard" class="btn danger">Delete Board</button>
+        </div>
+      </header>
+
+      <section class="toolbar">
+        <div class="left-tools">
+          <label>
+            Milestone
+            <select id="milestoneFilter"></select>
+          </label>
+          <label>
+            Search
+            <input id="searchInput" placeholder="Find task" />
+          </label>
+        </div>
+        <div class="right-tools">
+          <button id="btnAddCard" class="btn primary">+ Task</button>
+          <button id="btnAddList" class="btn">+ Column</button>
+        </div>
+      </section>
+      <div id="milestonePolicyHint" class="milestone-policy-hint"></div>
+
+      <section id="kanbanColumns" class="kanban-columns"></section>
+
+      <aside id="milestoneDetailPanel" class="milestone-detail-panel" aria-label="Milestone detail panel">
+        <header class="milestone-detail-header">
+          <button id="btnMilestonePanelBack" class="btn btn-sm">Back</button>
+          <h3 id="milestonePanelTitle" class="milestone-detail-title">Milestone Details</h3>
+          <button id="btnMilestonePanelClose" class="btn btn-sm">Close</button>
+        </header>
+        <div id="milestoneDetailContent" class="milestone-detail-content">
+          Select a milestone to inspect its contract details and tasks.
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="promptDialog" class="card-dialog">
+    <form method="dialog" class="doc-dialog-form">
+      <header class="modal-header">
+        <h3 id="promptDialogTitle" class="modal-title">Prompt</h3>
+      </header>
+      <div class="card-dialog-body" style="padding: 1rem;">
+        <p id="promptDialogText" style="margin-bottom: 1rem; color: var(--color-text);"></p>
+        <input id="promptDialogInput" type="text"
+          style="width: 100%; display: none; padding: 0.5rem; background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); border-radius: 4px;" />
+      </div>
+      <menu style="display: flex; justify-content: flex-end; gap: 0.5rem; padding: 0 1rem 1rem 1rem; margin: 0;">
+        <button type="button" id="promptDialogCancel" class="btn">Cancel</button>
+        <button type="button" id="promptDialogOk" class="btn primary">OK</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="docDialog" class="card-dialog doc-dialog">
+    <form method="dialog" class="doc-dialog-form">
+      <header class="modal-header">
+        <h3 id="docDialogTitle" class="modal-title">Document</h3>
+        <button value="close" class="btn">Close</button>
+      </header>
+      <div id="docDialogContent" class="markdown-body doc-dialog-content">
+        Loading...</div>
+    </form>
+  </dialog>
+
+  <!-- Why MCD Modal -->
+  <dialog id="whyMcdDialog" class="card-dialog why-dialog">
+    <form method="dialog">
+      <div class="modal-header why-header">
+        <h2 class="why-title">Why MCD?</h2>
+        <button value="close" class="btn">Close</button>
+      </div>
+    </form>
+    <div class="why-dialog-body">
+      <p class="why-paragraph">The <strong>Micro-Contract Development (MCD)</strong> methodology was forged for
+        solo operators collaborating with advanced AI agents. It trades raw conversational speed for systemic
+        determinism.</p>
+
+      <h3 class="why-section-title">Constraint is Freedom</h3>
+      <p class="why-paragraph">By severely limiting what an AI agent can do without explicit permission, the
+        operator guarantees that the architecture remains entirely under their control. No phantom files are generated,
+        and no scope creep occurs without a formalized contract.</p>
+
+      <h3 class="why-section-title">Total Observability</h3>
+      <p class="why-paragraph">Every decision, rollback, and feature deployment is captured as a semantic,
+        human-readable artifact. The operator never has to wonder <em>what</em> an AI agent changed while working on a
+        complex feature.</p>
+
+      <h3 class="why-section-title">Deterministic Engineering</h3>
+      <p>Contracts act as both absolute instruction sets for the machine and historical ledgers for human operators,
+        eliminating "black box" code drift and making the software's evolution totally replayable.</p>
+    </div>
+  </dialog>
+
+  <dialog id="attributionDialog" class="card-dialog attribution-dialog">
+    <form method="dialog">
+      <div class="modal-header attribution-header">
+        <h2 class="why-title">Credits</h2>
+        <button value="close" class="btn">Close</button>
+      </div>
+    </form>
+    <div class="attribution-dialog-body">
+      <section class="attribution-entry">
+        <h3 class="why-section-title">Active Twist</h3>
+        <p class="why-paragraph">Active Twist is a Modern Readiness Consulting Firm that builds diagnostic, learning,
+          and delivery systems to help organizations improve how work actually gets done. Their work spans innovation
+          maturity, intergroup leadership, AI readiness, and product delivery, serving clients from Fortune 500
+          companies to public institutions. AmphionAgent and the MCD methodology are products of Active Twist's
+          commitment to building what they need, proving it works, and sharing it openly.</p>
+        <div class="attribution-links">
+          <a class="attribution-link-btn" href="https://activetwist.com" target="_blank" rel="noopener noreferrer">Visit
+            Active Twist</a>
+        </div>
+      </section>
+
+      <section class="attribution-entry">
+        <h3 class="why-section-title">Stanton Brooks</h3>
+        <p class="why-paragraph">Stanton Brooks is a product manager and UX veteran with nearly two decades of
+          experience shipping software, leading design teams, and advising organizations on how to build things people
+          actually want to use. He developed the Micro-Contract Development methodology to bring product discipline to
+          the age of agentic AI development and built AmphionAgent to prove it works. He is the Director of UX &
+          Product Innovation at Active Twist.</p>
+        <div class="attribution-links">
+          <a class="attribution-link-btn" href="https://www.linkedin.com/in/stantonbrooks/" target="_blank"
+            rel="noopener noreferrer">View Stanton on LinkedIn</a>
+        </div>
+      </section>
+    </div>
+  </dialog>
+
+  <dialog id="milestoneArchivesDialog" class="card-dialog milestone-archives-dialog">
+    <form method="dialog" class="doc-dialog-form">
+      <header class="modal-header">
+        <h3 class="modal-title">Archived Milestones</h3>
+        <button value="close" class="btn">Close</button>
+      </header>
+      <div id="milestoneArchivesList" class="milestone-archives-list"></div>
+      <div id="milestoneArchivesEmpty" class="empty-state">No archived milestones for this board.</div>
+    </form>
+  </dialog>
+
+  <dialog id="cardDialog" class="card-dialog">
+    <form id="cardForm" method="dialog">
+      <div class="card-dialog-header">
+        <h3 id="cardDialogTitle">Task</h3>
+        <span id="cardDialogIssueNumber" class="dialog-issue-badge is-hidden">—</span>
+      </div>
+      <input id="cardId" type="hidden" />
+
+      <label>Title
+        <input id="cardTitle" required maxlength="160" />
+      </label>
+
+      <div class="grid-two">
+        <label>Milestone
+          <select id="cardMilestone"></select>
+        </label>
+        <label>Priority
+          <select id="cardPriority">
+            <option value="P0">P0</option>
+            <option value="P1">P1</option>
+            <option value="P2">P2</option>
+            <option value="P3">P3</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grid-two">
+        <label>Status Column
+          <select id="cardList"></select>
+        </label>
+        <label>Type
+          <select id="cardKind">
+            <option value="task">Task</option>
+            <option value="bug">Bug</option>
+          </select>
+        </label>
+      </div>
+
+      <label>Target Date
+        <input id="cardTargetDate" type="date" />
+      </label>
+
+      <label>Owner
+        <input id="cardOwner" maxlength="80" placeholder="Optional" />
+      </label>
+
+      <label>Description
+        <textarea id="cardDescription" rows="4" placeholder="What needs to happen?"></textarea>
+      </label>
+
+      <label>Acceptance
+        <textarea id="cardAcceptance" rows="3" placeholder="How do we know this is done?"></textarea>
+      </label>
+
+      <menu>
+        <button value="cancel" type="button" id="btnCancelCard" class="btn">Cancel</button>
+        <button value="delete" type="button" id="btnDeleteCard" class="btn danger">Delete</button>
+        <button value="save" type="submit" class="btn primary">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <template id="cardTemplate">
+    <article class="card" draggable="true">
+      <header>
+        <span class="bug-badge" hidden>BUG</span>
+        <div class="spacer"></div>
+        <span class="priority-badge"></span>
+      </header>
+      <h4></h4>
+      <p class="description"></p>
+      <footer>
+        <span class="issue-badge"></span>
+        <div class="spacer"></div>
+        <span class="owner"></span>
+        <span class="target-date"></span>
+      </footer>
+    </article>
+  </template>
+
+  <script src="/vendor/marked.min.js"></script>
+  <script src="/vendor/mermaid.min.js"></script>
+  <script src="/app.js" defer></script>
+</body>
+
+</html>
