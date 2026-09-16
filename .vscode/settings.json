@@ -1,5 +1,9 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/ALEAPP/.venv/Scripts/python.exe",
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportImplicitRelativeImport": "none"
+  },
   "python.analysis.extraPaths": [
     "${workspaceFolder}/ALEAPP",
     "${workspaceFolder}/ALEAPP/scripts",
@@ -12,13 +16,16 @@
     "ALEAPP",
     "aleapp",
     "alprofile",
+    "arrowcolor",
     "casedata",
+    "columnspan",
     "DCIM",
     "enabledelayedexpansion",
     "ERRORLEVEL",
     "extracttype",
     "fastboot",
     "fgcolor",
+    "fieldbackground",
     "highlightthickness",
     "iLEAPP",
     "ileapp",
@@ -29,8 +36,10 @@
     "lavafuncs",
     "lcasedata",
     "LEAPP",
+    "leapps",
     "logfunc",
     "logtext",
+    "magnif",
     "MEIPASS",
     "mlist",
     "msgbox",
@@ -40,15 +49,23 @@
     "pady",
     "Plists",
     "psscriptroot",
+    "relheight",
     "relx",
     "sdcard",
+    "selectbackground",
     "selectcolor",
+    "selectforeground",
     "setlocal",
     "sqlcipher",
+    "tbox",
     "tearoff",
+    "textvariable",
+    "troughcolor",
     "unfinalised",
     "usagestats",
+    "validatecommand",
     "venv",
-    "wraplength"
+    "wraplength",
+    "yscrollcommand"
   ]
 }
